@@ -10,6 +10,7 @@ const faculty_routes_1 = require("../modules/faculty/faculty.routes");
 const admin_routes_1 = require("../modules/admin/admin.routes");
 const course_routes_1 = require("../modules/course/course.routes");
 const semisterRegistation_routes_1 = require("../modules/semisterRegistation/semisterRegistation.routes");
+const offredCourse_router_1 = require("../modules/offredCourse/offredCourse.router");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -47,6 +48,10 @@ const moduleRoutes = [
     {
         path: "/semister-registration",
         route: semisterRegistation_routes_1.SemisterRegistationRoutes,
+    },
+    {
+        path: "/offred-course",
+        route: offredCourse_router_1.offredCourseRouter,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
