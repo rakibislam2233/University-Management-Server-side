@@ -1,58 +1,58 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.offredCourseValidation = void 0;
-const z = __importStar(require("zod"));
+exports.OfferedCourseValidations = void 0;
+const zod_1 = require("zod");
 const offredCourse_constant_1 = require("./offredCourse.constant");
-const createOffredCourseValidationSchame = z.object({
-    body: z.object({
-        seminsterRegistation: z.string(),
-        academicFaculty: z.string(),
-        academicDepertment: z.string(),
-        course: z.string(),
-        faculty: z.string(),
-        maxCapacity: z.number().min(1, "Max capacity must be at least 1"),
-        section: z.number().min(1, "Section must be at least 1"),
-        days: z.array(z.enum([...offredCourse_constant_1.Days])),
-        startTime: z.string(),
-        endTime: z.string(),
+const timeStringSchema = zod_1.z.string().refine((time) => {
+    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // 00-09 10-19 20-23
+    return regex.test(time);
+}, {
+    message: 'Invalid time format , expected "HH:MM" in 24 hours format',
+});
+const createOfferedCourseValidationSchema = zod_1.z.object({
+    body: zod_1.z
+        .object({
+        semesterRegistration: zod_1.z.string(),
+        academicFaculty: zod_1.z.string(),
+        academicDepartment: zod_1.z.string(),
+        course: zod_1.z.string(),
+        faculty: zod_1.z.string(),
+        section: zod_1.z.number(),
+        maxCapacity: zod_1.z.number(),
+        days: zod_1.z.array(zod_1.z.enum([...offredCourse_constant_1.Days])),
+        startTime: timeStringSchema, // HH: MM   00-23: 00-59
+        endTime: timeStringSchema,
+    })
+        .refine((body) => {
+        // startTime : 10:30  => 1970-01-01T10:30
+        //endTime : 12:30  =>  1970-01-01T12:30
+        const start = new Date(`1970-01-01T${body.startTime}:00`);
+        const end = new Date(`1970-01-01T${body.endTime}:00`);
+        return end > start;
+    }, {
+        message: "Start time should be before End time !  ",
     }),
 });
-const updateOffredCourseValidationSchame = z.object({
-    body: z.object({
-        faculty: z.string().optional(),
-        maxCapacity: z
-            .number()
-            .min(1, "Max capacity must be at least 1")
-            .optional(),
-        days: z.enum([...offredCourse_constant_1.Days]).optional(),
-        startTime: z.string().optional(),
-        endTime: z.string().optional(),
+const updateOfferedCourseValidationSchema = zod_1.z.object({
+    body: zod_1.z
+        .object({
+        faculty: zod_1.z.string(),
+        maxCapacity: zod_1.z.number(),
+        days: zod_1.z.array(zod_1.z.enum([...offredCourse_constant_1.Days])),
+        startTime: timeStringSchema, // HH: MM   00-23: 00-59
+        endTime: timeStringSchema,
+    })
+        .refine((body) => {
+        // startTime : 10:30  => 1970-01-01T10:30
+        //endTime : 12:30  =>  1970-01-01T12:30
+        const start = new Date(`1970-01-01T${body.startTime}:00`);
+        const end = new Date(`1970-01-01T${body.endTime}:00`);
+        return end > start;
+    }, {
+        message: "Start time should be before End time !  ",
     }),
 });
-exports.offredCourseValidation = {
-    createOffredCourseValidationSchame,
-    updateOffredCourseValidationSchame,
+exports.OfferedCourseValidations = {
+    createOfferedCourseValidationSchema,
+    updateOfferedCourseValidationSchema,
 };

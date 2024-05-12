@@ -44,7 +44,6 @@ const globalErrorHandler = (err, req, res, next) => {
         errorSources = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorSources;
     }
     else if (err instanceof AppError_1.default) {
-        console.log('object');
         statusCode = err === null || err === void 0 ? void 0 : err.statusCode;
         message = err.message;
         errorSources = [

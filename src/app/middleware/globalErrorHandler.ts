@@ -39,7 +39,6 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
   } else if (err instanceof AppError) {
-    console.log('object');
     statusCode = err?.statusCode;
     message = err.message;
     errorSources = [

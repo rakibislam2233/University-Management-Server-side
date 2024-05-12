@@ -51,7 +51,7 @@ const moduleRoutes = [
     },
     {
         path: "/offred-course",
-        route: offredCourse_router_1.offredCourseRouter,
+        route: offredCourse_router_1.offeredCourseRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

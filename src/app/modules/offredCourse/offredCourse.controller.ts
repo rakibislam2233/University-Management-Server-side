@@ -1,67 +1,78 @@
+import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { cathcAsync } from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { offredCourseSevice } from "./offredCourse.service";
+import { cathcAsync } from "../../utils/catchAsync";
+import { OfferedCourseServices } from "./offredCourse.service";
 
-const createOffredCourse = cathcAsync(async (req, res, next) => {
-  const result = await offredCourseSevice.createOffredCourseIntoDB(req.body);
+const createOfferedCourse = cathcAsync(async (req: Request, res: Response) => {
+  const result = await OfferedCourseServices.createOfferedCourseIntoDB(
+    req.body
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Offred Course created successfully",
+    message: "Offered Course is created successfully !",
     data: result,
   });
 });
 
-const getAllOffredCourse = cathcAsync(async (req, res, next) => {
-  const result = await offredCourseSevice.getAllOffredCourseFromDB(req.query);
+const getAllOfferedCourses = cathcAsync(async (req: Request, res: Response) => {
+  const result = await OfferedCourseServices.getAllOfferedCoursesFromDB(
+    req.query
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "All Offred Course retrive successfully",
+    message: "OfferedCourses retrieved successfully !",
     data: result,
   });
 });
 
-const getSingleOffredCourse = cathcAsync(async (req, res, next) => {
+const getSingleOfferedCourses = cathcAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await OfferedCourseServices.getSingleOfferedCourseFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "OfferedCourse fetched successfully",
+      data: result,
+    });
+  }
+);
+
+const updateOfferedCourse = cathcAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await offredCourseSevice.getSingleOffredCourse(id);
+
+  const result = await OfferedCourseServices.updateOfferedCourseIntoDB(
+    id,
+    req.body
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Single Offred Course retrive successfully",
+    message: "OfferedCourse updated successfully",
     data: result,
   });
 });
 
-const updateOffredCourse = cathcAsync(async (req, res, next) => {
-  const id = req.params;
-  //   const result = await offredCourseSevice.updateOffredCourseIntoDB(
-  //     id,
-  //     req.body
-  //   );
-  //   sendResponse(res, {
-  //     statusCode: httpStatus.OK,
-  //     success: true,
-  //     message: "update offred course successfully",
-  //     data: result,
-  //   });
-});
+const deleteOfferedCourseFromDB = cathcAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await OfferedCourseServices.deleteOfferedCourseFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "OfferedCourse deleted successfully",
+      data: result,
+    });
+  }
+);
 
-const deleteOffredCourse = cathcAsync(async (req, res, next) => {
-  const id = req.params;
-  //   const result = await offredCourseSevice.deleteOffredCourseIntoDB(id);
-  //   sendResponse(res, {
-  //     statusCode: httpStatus.OK,
-  //     success: true,
-  //     message: "Deleted offred course successfully",
-  //     data: result,
-  //   });
-});
-export const offredCourseController = {
-  createOffredCourse,
-  getAllOffredCourse,
-  getSingleOffredCourse,
-  updateOffredCourse,
-  deleteOffredCourse,
+export const OfferedCourseControllers = {
+  createOfferedCourse,
+  getAllOfferedCourses,
+  getSingleOfferedCourses,
+  updateOfferedCourse,
+  deleteOfferedCourseFromDB,
 };
