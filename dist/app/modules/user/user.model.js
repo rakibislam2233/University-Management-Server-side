@@ -23,6 +23,10 @@ const userSchema = new mongoose_1.Schema({
     password: {
         type: String,
         required: true,
+        select: 0,
+    },
+    passwordChangeTime: {
+        type: Date,
     },
     needsPasswordChange: {
         type: Boolean,
@@ -58,4 +62,28 @@ userSchema.post("save", function (doc, next) {
         next();
     });
 });
+//statics
+/** Check if user exist on database*/
+userSchema.statics.isUserExistByCustomId = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield exports.User.findOne({ id }).select("+password");
+    });
+};
+/** Check if user deleted on database*/
+userSchema.statics.isUserDeleted = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield exports.User.findOne({ id, isDeleted: true });
+    });
+};
+/** Check request password and haspassword matched*/
+userSchema.statics.isPasswordMatched = function (plaintextPassword, hashPassword) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield bcrypt_1.default.compare(plaintextPassword, hashPassword);
+    });
+};
+//
+userSchema.statics.isJWTBeforPasswordChanged = function (passwordChangeTimestamp, jwtIssuedTimestamp) {
+    const passwordFormatTime = new Date(passwordChangeTimestamp).getTime() / 1000;
+    return passwordFormatTime > jwtIssuedTimestamp;
+};
 exports.User = (0, mongoose_1.model)("User", userSchema);

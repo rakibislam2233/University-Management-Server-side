@@ -9,6 +9,7 @@ import { studentSearchableFields } from "./student.constaint";
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   const studentQuery = new QueryBuilder(
     Student.find()
+      .populate("user")
       .populate("academicSemister")
       .populate({
         path: "academicDepertment",

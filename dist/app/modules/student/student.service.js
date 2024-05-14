@@ -33,6 +33,7 @@ const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const student_constaint_1 = require("./student.constaint");
 const getAllStudentFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const studentQuery = new QueryBuilder_1.default(student_model_1.default.find()
+        .populate("user")
         .populate("academicSemister")
         .populate({
         path: "academicDepertment",
