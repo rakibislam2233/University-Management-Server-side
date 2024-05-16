@@ -12,4 +12,7 @@ const authenticateToken_1 = __importDefault(require("../../middleware/authentica
 const router = (0, express_1.Router)();
 router.post("/login", (0, validateRequest_1.default)(auth_validation_1.authValidation.loggingUserValidation), auth_controller_1.authController.loggingUser);
 router.post("/change-password", (0, authenticateToken_1.default)("admin", "faculty", "student"), (0, validateRequest_1.default)(auth_validation_1.authValidation.changePasswordValidation), auth_controller_1.authController.changePassword);
+router.post("/refresh-token", (0, validateRequest_1.default)(auth_validation_1.authValidation.refreshTokenValidation), auth_controller_1.authController.refreshToken);
+router.post("/forgot-password", (0, validateRequest_1.default)(auth_validation_1.authValidation.forgotPasswordValidation), auth_controller_1.authController.forgotPassword);
+router.post("/reset-password", (0, validateRequest_1.default)(auth_validation_1.authValidation.resetPasswordValidation), auth_controller_1.authController.resetPassword);
 exports.authRoutes = router;

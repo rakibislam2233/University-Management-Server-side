@@ -15,6 +15,7 @@ const createCourse = cathcAsync(async (req, res, next) => {
 });
 
 const getAllCourse = cathcAsync(async (req, res, next) => {
+
   const result = await courseSevice.getAllCourseFromDB(req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,

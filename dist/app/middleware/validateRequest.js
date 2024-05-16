@@ -14,6 +14,7 @@ const validateRequest = (schema) => {
     return (0, catchAsync_1.cathcAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         yield schema.parseAsync({
             body: req.body,
+            cookies: req.cookies,
         });
         next();
     }));

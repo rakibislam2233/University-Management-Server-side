@@ -47,8 +47,30 @@ const createAdmin = (0, catchAsync_1.cathcAsync)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const changeStatus = (0, catchAsync_1.cathcAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield user_service_1.userService.changeStatus(id, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Status is changed succesfully",
+        data: result,
+    });
+}));
+const getMe = (0, catchAsync_1.cathcAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, role } = req.user;
+    const result = yield user_service_1.userService.getMe(userId, role);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Single user is retrieved succesfully",
+        data: result,
+    });
+}));
 exports.userController = {
     createStudent,
     createFaculty,
     createAdmin,
+    getMe,
+    changeStatus,
 };

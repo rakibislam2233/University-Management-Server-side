@@ -38,7 +38,6 @@ const getAllSemisterRegistation = (0, catchAsync_1.cathcAsync)((req, res, next) 
 const getSingleSemisterRegistation = (0, catchAsync_1.cathcAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield semisterRegistation_service_1.SemisterRegistationService.getSingleSemisterRegistationFromDB(id);
-    console.log(result);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

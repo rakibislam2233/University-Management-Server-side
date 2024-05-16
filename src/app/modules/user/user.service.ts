@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import config from "../../config";
 import AppError from "../../errors/AppError";
+import jwt from "jsonwebtoken";
 import { AcademicSemister } from "../academicSemister/academicSemister.model";
 import { TStudent } from "../student/student.interface";
 import Student from "../student/student.model";
@@ -13,12 +14,14 @@ import { AcademicDepertment } from "../academicDepertment/academicDepertment.mod
 import { TFaculty } from "../faculty/faculty.interface";
 import { Admin } from "../admin/admin.model";
 import { TAdmin } from "../admin/admin.interface";
+import { JwtPayload } from "jsonwebtoken";
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   //create a object
   const user: Partial<TUser> = {};
   user.password = password || (config.default_password as string);
   user.role = "student";
+  user.email = payload?.email;
   const admisstionSemister = await AcademicSemister.findById(
     payload.academicSemister
   );
@@ -60,7 +63,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
   //set student role
   userData.role = "faculty";
-
+  userData.email = payload?.email;
   // find academic department info
   const academicDepartment = await AcademicDepertment.findById(
     payload.academicDepartment
@@ -115,7 +118,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 
   //set student role
   userData.role = "admin";
-
+  userData.email = payload?.email;
   const session = await mongoose.startSession();
 
   try {
@@ -152,8 +155,41 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = User.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+const getMe = async (userId: string, role: string) => {
+  //user exist
+  const user = await User.isUserExistByCustomId(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  //is user is deleted
+  if (await User.isUserDeleted(userId)) {
+    throw new AppError(httpStatus.FORBIDDEN, "User is deleted");
+  }
+  //is user is blocked
+  if (user.status === "block") {
+    throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
+  }
+
+  let result = null;
+
+  if (role === "admin") {
+    result = await Admin.findOne({ id: userId }).populate("user");
+  } else if (role === "faculty") {
+    result = await Faculty.findOne({ id: userId }).populate("user");
+  } else if (role === "student") {
+    result = await Student.findOne({ id: userId }).populate("user");
+  }
+  return result;
+};
 export const userService = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
+  changeStatus,
 };

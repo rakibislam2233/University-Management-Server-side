@@ -29,8 +29,6 @@ const getSingleSemisterRegistation = cathcAsync(async (req, res, next) => {
   const { id } = req.params;
   const result =
     await SemisterRegistationService.getSingleSemisterRegistationFromDB(id);
-
-  console.log(result);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

@@ -5,6 +5,7 @@ import { createFacultyValidationSchema } from "../faculty/faculty.validation";
 import { createAdminValidationSchema } from "../admin/admin.validation";
 import authenticateToken from "../../middleware/authenticateToken";
 import { USER_ROLE } from "./user.constant";
+import { userValidation } from "./user.validation";
 
 const router = express.Router();
 router.post(
@@ -23,8 +24,15 @@ router.post(
 
 router.post(
   "/create-admin",
-  authenticateToken(USER_ROLE.admin),
   validateRequest(createAdminValidationSchema),
   userController.createAdmin
 );
+
+router.post(
+  "/change-status/:id",
+  authenticateToken("admin"),
+  validateRequest(userValidation.changeStatusValidationSchema),
+  userController.changeStatus
+);
+router.get("/getMe", authenticateToken("admin"), userController.getMe);
 export const userRoutes = router;

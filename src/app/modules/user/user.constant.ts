@@ -4,3 +4,4 @@ export const USER_ROLE = {
   admin: "admin",
 } as const;
 
+export const UserStatus = ["is-progress", "block"];

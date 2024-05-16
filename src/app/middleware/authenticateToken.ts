@@ -14,7 +14,7 @@ const authenticateToken = (...roles: TUserRole[]) => {
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized to access");
     }
-    const decoded = jwt.verify(token as string, config.jwt_secret as string);
+    const decoded = jwt.verify(token as string, config.jwt_access_secret as string);
     const { role, userId, iat } = decoded as JwtPayload;
     //user exist
     const user = await User.isUserExistByCustomId(userId);

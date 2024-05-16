@@ -25,7 +25,7 @@ const authenticateToken = (...roles) => {
         if (!token) {
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Unauthorized to access");
         }
-        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_secret);
+        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
         const { role, userId, iat } = decoded;
         //user exist
         const user = yield user_model_1.User.isUserExistByCustomId(userId);

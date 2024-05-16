@@ -30,6 +30,7 @@ const createStudentIntoDB = (password, payload) => __awaiter(void 0, void 0, voi
     const user = {};
     user.password = password || config_1.default.default_password;
     user.role = "student";
+    user.email = payload === null || payload === void 0 ? void 0 : payload.email;
     const admisstionSemister = yield academicSemister_model_1.AcademicSemister.findById(payload.academicSemister);
     if (!admisstionSemister) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Admission semester not found");
@@ -66,6 +67,7 @@ const createFacultyIntoDB = (password, payload) => __awaiter(void 0, void 0, voi
     userData.password = password || config_1.default.default_password;
     //set student role
     userData.role = "faculty";
+    userData.email = payload === null || payload === void 0 ? void 0 : payload.email;
     // find academic department info
     const academicDepartment = yield academicDepertment_model_1.AcademicDepertment.findById(payload.academicDepartment);
     if (!academicDepartment) {
@@ -107,6 +109,7 @@ const createAdminIntoDB = (password, payload) => __awaiter(void 0, void 0, void 
     userData.password = password || config_1.default.default_password;
     //set student role
     userData.role = "admin";
+    userData.email = payload === null || payload === void 0 ? void 0 : payload.email;
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
@@ -136,8 +139,40 @@ const createAdminIntoDB = (password, payload) => __awaiter(void 0, void 0, void 
         throw new Error(err);
     }
 });
+const changeStatus = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = user_model_1.User.findByIdAndUpdate(id, payload, { new: true });
+    return result;
+});
+const getMe = (userId, role) => __awaiter(void 0, void 0, void 0, function* () {
+    //user exist
+    const user = yield user_model_1.User.isUserExistByCustomId(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    }
+    //is user is deleted
+    if (yield user_model_1.User.isUserDeleted(userId)) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "User is deleted");
+    }
+    //is user is blocked
+    if (user.status === "block") {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "User is blocked");
+    }
+    let result = null;
+    if (role === "admin") {
+        result = yield admin_model_1.Admin.findOne({ id: userId }).populate("user");
+    }
+    else if (role === "faculty") {
+        result = yield faculty_model_1.Faculty.findOne({ id: userId }).populate("user");
+    }
+    else if (role === "student") {
+        result = yield student_model_1.default.findOne({ id: userId }).populate("user");
+    }
+    return result;
+});
 exports.userService = {
     createStudentIntoDB,
     createFacultyIntoDB,
     createAdminIntoDB,
+    getMe,
+    changeStatus,
 };
